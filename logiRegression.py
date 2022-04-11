@@ -46,23 +46,18 @@ class LogiRegression:
         h = self.grad_l(w,X,y,N) / self.hessi_l(w,X,N)
         h = h.reshape(w.shape)
         i = 0
-        print("w: " + str(w.T))
-        print(h[1,0])
         while abs(h[0,0]) >= 0.001 or abs(h[1,0]) >= 0.001:
             h = self.grad_l(w,X,y,N) / self.hessi_l(w,X,N)
             h = h.reshape(w.shape)
-            print(str(i) + "h: " + str(h.T))
-            print(str(i) + "hessi: " + str(self.hessi_l(w,X,N)))  
-            
             # w(i+1) = w(i) - grad_l(w) / hessi_l(w)
             w = w - h
-            print(str(i) + "grad: " + str(self.grad_l(w,X,y,N))) 
             print(str(i) + "w: " + str(w.T))
             i += 1
         return w
         
     def fit(self, X, y, N):
-        w = np.array([[0.5,0.5]])
+        # Seed with w = 1
+        w = np.array([[1,1]])
         print("w: " + str(w.T.shape))
         print("X: " + str(X.shape))
         print("y: " + str(y.shape))
@@ -71,7 +66,6 @@ class LogiRegression:
     
     def predict(self, X):
         pc_one_x = sig(self.w.T @ X)
-        print(pc_one_x.shape)
         self.prediction = np.round(pc_one_x).astype(int)
     
              
