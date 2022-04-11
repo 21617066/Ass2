@@ -18,50 +18,61 @@ class LogiRegression:
         pass
             
     def grad_l(self ,w, X, y, N):
-        # print("gw: " + str(w.shape))
-        # print("gX: " + str(X.shape))
-        # print("gy: " + str(y.shape))
-        # print("gN: " + str(N))
-        temp = sig(w.T @ X) - y
-        temp2 = np.empty((2,N))
-        # print("gt shape: " +  str(temp.shape))
-        # print("gt2 shape: " +  str(temp2.shape))
+        sigmod = sig(w.T @ X[:,0])
+        temp = (sigmod - y[0]) * X[:,0]
         
-        for n in range(N):
-            # print("g" + str(n))
-            temp2[:, n] = temp[:,n] * X[:,n]
-        return np.sum(temp2, axis=1)
+        for n in range(N-1):
+            sigmod = sig(w.T @ X[:,n+1])
+            temp = temp + (sigmod - y[n+1]) * X[:,n+1]
+        
+        #return np.sum(temp2, axis=1)
+        return temp
 
-    def hessi_l(self, w, X, y, N):
-        # print("hw: " + str(w.shape))
-        # print("hX: " + str(X.shape))
-        # print("hy: " + str(y.shape))
-        # print("hN: " + str(N))
-        temp = sig(w.T @ X) * (np.ones(N) - sig(w.T @ X))
-        temp2 = np.empty((2,N))
-        for n in range(N):
+    def hessi_l(self, w, X, N):
+        sigmod = sig(w.T @ X[:,0])
+        temp = sigmod * (1 - sigmod)*X[:,0]**2
+        
+        for n in range(N-1):
             # print("h" + str(n))
-            temp2[:,n] = temp[:,n] * X[:,n]**2
-        return np.sum(temp2, axis=1)
+            sigmod = sig(w.T @ X[:,n+1])
+            temp = temp + sigmod * (1 - sigmod)*X[:,n+1]**2
+        
+        #return np.sum(temp2, axis=1)
+        return temp
     
     # Function to find the root
     
     def newtonRaphson(self, w,X,y,N):
-        h = self.grad_l(w,X,y,N) / self.hessi_l(w,X,y,N)
+        h = self.grad_l(w,X,y,N) / self.hessi_l(w,X,N)
+        h = h.reshape(w.shape)
         i = 0
-        while abs(h.all()) >= 0.0001:
-            h = self.grad_l(w,X,y,N) / self.hessi_l(w,X,y,N)
-            print(str(i) + "h: " + str(h))  
-            i += 1
-            # w(i+1) = w(i) - f(w) / f'(w)
+        print("w: " + str(w.T))
+        print(h[1,0])
+        while abs(h[0,0]) >= 0.001 or abs(h[1,0]) >= 0.001:
+            h = self.grad_l(w,X,y,N) / self.hessi_l(w,X,N)
+            h = h.reshape(w.shape)
+            print(str(i) + "h: " + str(h.T))
+            print(str(i) + "hessi: " + str(self.hessi_l(w,X,N)))  
+            
+            # w(i+1) = w(i) - grad_l(w) / hessi_l(w)
             w = w - h
-            print(str(i) + "w: " + str(w)) 
+            print(str(i) + "grad: " + str(self.grad_l(w,X,y,N))) 
+            print(str(i) + "w: " + str(w.T))
+            i += 1
+        return w
         
     def fit(self, X, y, N):
-        w = np.array([0.5,0.5])
-        w = w.reshape((2,1))
-        print("w: " + str(w.shape))
-        return self.newtonRaphson(w, X, y, N)
+        w = np.array([[0.5,0.5]])
+        print("w: " + str(w.T.shape))
+        print("X: " + str(X.shape))
+        print("y: " + str(y.shape))
+        self.w = self.newtonRaphson(w.T, X, y, N)
+        return self.w
+    
+    def predict(self, X):
+        pc_one_x = sig(self.w.T @ X)
+        print(pc_one_x.shape)
+        self.prediction = np.round(pc_one_x).astype(int)
     
              
     

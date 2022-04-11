@@ -41,7 +41,8 @@ class NaiveB:
             self.pxc[:,c] = np.prod(dim_prob, axis=1)
         
         print(self.pc.shape)
-        self.prediction = np.argmax(self.pxc, axis=1)
+        print(self.pxc.shape)
+        self.prediction = np.argmax(self.pc*self.pxc, axis=1)
 
             
             
