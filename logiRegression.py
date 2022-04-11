@@ -19,7 +19,6 @@ class LogiRegression:
             
     def grad_l(self ,w, X, y, N, lam):
         sigmod = sig(w.T @ X[:,0])
-        print((1/lam)*w)
         temp = (sigmod - y[0]) * X[:,0] 
         
         for n in range(N-1):
@@ -27,12 +26,10 @@ class LogiRegression:
             temp = temp + (sigmod - y[n+1]) * X[:,n+1]
         
         #return np.sum(temp2, axis=1)
-        print(temp + (1/lam)*w.T) 
         return temp + (1/lam)*w.T
 
     def hessi_l(self, w, X, N, lam):
         sigmod = sig(w.T @ X[:,0])
-        print((1/lam)*np.ones(w.shape))
         temp = sigmod * (1 - sigmod)*X[:,0]**2 
         
         for n in range(N-1):
@@ -41,12 +38,14 @@ class LogiRegression:
             temp = temp + sigmod * (1 - sigmod)*X[:,n+1]**2
         
         #return np.sum(temp2, axis=1)
-        print(temp + (1/lam)*np.ones(w.T.shape))
         return temp + (1/lam)*np.ones(w.T.shape)
     
     # Function to find the root
     
     def newtonRaphson(self, w,X,y,N,lam):
+        print(X.shape)
+        X = np.append(np.ones((1,N)), X, axis=0)
+        print(X.shape)
         h = self.grad_l(w,X,y,N,lam) / self.hessi_l(w,X,N,lam)
         h = h.reshape(w.shape)
         i = 0
@@ -66,7 +65,10 @@ class LogiRegression:
         self.w = self.newtonRaphson(w.T, X, y, N, lam)
         return self.w
     
-    def predict(self, X):
+    def predict(self, X,N):
+        X = np.append(np.ones((1,N)), X, axis=0)
+        print(self.w.T)
+        print(X)
         pc_one_x = sig(self.w.T @ X)
         self.prediction = np.round(pc_one_x).astype(int)
     
