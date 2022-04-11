@@ -43,9 +43,8 @@ class LogiRegression:
     # Function to find the root
     
     def newtonRaphson(self, w,X,y,N,lam):
-        print(X.shape)
         X = np.append(np.ones((1,N)), X, axis=0)
-        print(X.shape)
+        w = np.append(np.ones((1,1)), w, axis=0)
         h = self.grad_l(w,X,y,N,lam) / self.hessi_l(w,X,N,lam)
         h = h.reshape(w.shape)
         i = 0
@@ -67,8 +66,6 @@ class LogiRegression:
     
     def predict(self, X,N):
         X = np.append(np.ones((1,N)), X, axis=0)
-        print(self.w.T)
-        print(X)
         pc_one_x = sig(self.w.T @ X)
         self.prediction = np.round(pc_one_x).astype(int)
     
