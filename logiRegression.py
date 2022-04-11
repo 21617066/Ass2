@@ -20,29 +20,29 @@ class LogiRegression:
     def grad_l(self ,w, X, y, N, lam):
         sigmod = sig(w.T @ X[:,0])
         print((1/lam)*w)
-        temp = (sigmod - y[0]) * X[:,0] + (1/lam)*w.T
+        temp = (sigmod - y[0]) * X[:,0] 
         
         for n in range(N-1):
             sigmod = sig(w.T @ X[:,n+1])
-            temp = temp + (sigmod - y[n+1]) * X[:,n+1] + (1/lam)*w.T
+            temp = temp + (sigmod - y[n+1]) * X[:,n+1]
         
         #return np.sum(temp2, axis=1)
-        print(temp)
-        return temp
+        print(temp + (1/lam)*w.T) 
+        return temp + (1/lam)*w.T
 
     def hessi_l(self, w, X, N, lam):
         sigmod = sig(w.T @ X[:,0])
         print((1/lam)*np.ones(w.shape))
-        temp = sigmod * (1 - sigmod)*X[:,0]**2 + (1/lam)*np.ones(w.T.shape)
+        temp = sigmod * (1 - sigmod)*X[:,0]**2 
         
         for n in range(N-1):
             # print("h" + str(n))
             sigmod = sig(w.T @ X[:,n+1])
-            temp = temp + sigmod * (1 - sigmod)*X[:,n+1]**2 + (1/lam)*np.ones(w.T.shape)
+            temp = temp + sigmod * (1 - sigmod)*X[:,n+1]**2
         
         #return np.sum(temp2, axis=1)
-        print(temp)
-        return temp
+        print(temp + (1/lam)*np.ones(w.T.shape))
+        return temp + (1/lam)*np.ones(w.T.shape)
     
     # Function to find the root
     
